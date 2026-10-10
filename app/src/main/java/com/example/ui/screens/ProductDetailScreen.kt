@@ -36,7 +36,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -279,7 +279,7 @@ fun ProductDetailScreen(
                     )
                 }
 
-                Divider(modifier = Modifier.padding(vertical = 18.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 18.dp))
 
                 // MEAL SIZES
                 Text(
@@ -460,7 +460,7 @@ fun ProductDetailScreen(
                     minLines = 2
                 )
 
-                Divider(modifier = Modifier.padding(vertical = 20.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                 // CUSTOMER REVIEWS SECTION
                 Row(

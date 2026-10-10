@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">QuickBite</string>
+    <string name="app_tagline">Fast, Fresh &amp; Delicious Meals Delivered</string>
+    <string name="requires_android_version">Requires Android 7.0 and up</string>
+    <string name="continue_as_guest">Continue as Guest</string>
+    <string name="sign_in_with_google">Continue with Google</string>
+    <string name="sign_in_with_email">Sign In with Email</string>
+    <string name="sign_up_with_email">Sign Up with Email</string>
 </resources>

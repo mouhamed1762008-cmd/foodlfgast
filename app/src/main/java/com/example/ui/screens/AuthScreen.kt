@@ -3,6 +3,7 @@ package com.example.ui.screens
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +36,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -277,7 +278,7 @@ fun AuthScreen(
                         Spacer(modifier = Modifier.height(14.dp))
                     }
 
-                    // Email/Password Submit button with validation
+                    // Email/Password Submit button with validation and Firebase Auth execution
                     Button(
                         onClick = {
                             if (emailInput.isBlank() || !emailInput.contains("@")) {
@@ -292,23 +293,74 @@ fun AuthScreen(
                                 errorMessage = "Please enter your name."
                                 return@Button
                             }
-                            // Direct feedback and prompt to use Google Sign-In as provisioned
-                            infoDialogMessage = "QuickBite uses secure single sign-on with Google Identity for instant verification without passwords. Please tap 'Sign in with Google' below."
+
+                            isLoading = true
+                            errorMessage = null
+                            coroutineScope.launch {
+                                try {
+                                    if (isSignUpMode) {
+                                        val authResult = Firebase.auth.createUserWithEmailAndPassword(
+                                            emailInput.trim(),
+                                            passwordInput
+                                        ).await()
+                                        authResult.user?.let { user ->
+                                            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                                                .setDisplayName(nameInput.trim())
+                                                .build()
+                                            user.updateProfile(profileUpdates).await()
+                                            try {
+                                                user.sendEmailVerification().await()
+                                            } catch (e: Exception) {
+                                                Log.w("Auth", "Verification email dispatch skipped", e)
+                                            }
+                                        }
+                                        isLoading = false
+                                        onAuthSuccess()
+                                    } else {
+                                        Firebase.auth.signInWithEmailAndPassword(
+                                            emailInput.trim(),
+                                            passwordInput
+                                        ).await()
+                                        isLoading = false
+                                        onAuthSuccess()
+                                    }
+                                } catch (e: Exception) {
+                                    isLoading = false
+                                    Log.e("Auth", "Email auth failed", e)
+                                    val rawMsg = e.localizedMessage ?: "Authentication failed"
+                                    errorMessage = if (rawMsg.contains("CONFIGURATION_NOT_FOUND", ignoreCase = true) ||
+                                        rawMsg.contains("operation-not-allowed", ignoreCase = true)
+                                    ) {
+                                        "Email/Password is not enabled on this backend. Please tap 'Continue with Google' or 'Continue as Guest'."
+                                    } else {
+                                        rawMsg
+                                    }
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                             .testTag("auth_submit_button"),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BrandPrimary)
+                        colors = ButtonDefaults.buttonColors(containerColor = BrandPrimary),
+                        enabled = !isLoading
                     ) {
-                        Text(
-                            text = if (isSignUpMode) "Sign Up with Email" else "Sign In with Email",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(22.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
                             )
-                        )
+                        } else {
+                            Text(
+                                text = if (isSignUpMode) "Sign Up with Email" else "Sign In with Email",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -317,13 +369,13 @@ fun AuthScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Divider(modifier = Modifier.weight(1f))
+                        HorizontalDivider(modifier = Modifier.weight(1f))
                         Text(
                             text = "  OR  ",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Divider(modifier = Modifier.weight(1f))
+                        HorizontalDivider(modifier = Modifier.weight(1f))
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -399,10 +451,12 @@ fun AuthScreen(
                         onClick = onContinueAsGuest,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(52.dp)
                             .testTag("continue_as_guest_button"),
                         shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.5.dp, BrandPrimary.copy(alpha = 0.5f)),
                         colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
@@ -416,7 +470,10 @@ fun AuthScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = "Continue as Guest",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = BrandPrimary
+                                )
                             )
                         }
                     }
@@ -463,12 +520,20 @@ fun AuthScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = "Requires Android 7.0 and up • v1.0",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
-            )
+            // System Requirements Badge
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                modifier = Modifier.padding(horizontal = 12.dp)
+            ) {
+                Text(
+                    text = "Requires Android 7.0 and up (API 24+) • QuickBite v1.0",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -480,7 +545,7 @@ fun AuthScreen(
                 title = { Text("Reset Password", fontWeight = FontWeight.Bold) },
                 text = {
                     Column {
-                        Text("Enter your email address and we'll send you instructions to reset your password.")
+                        Text("Enter your registered email address and we'll send you a password reset link.")
                         Spacer(modifier = Modifier.height(12.dp))
                         OutlinedTextField(
                             value = forgotEmailInput,
@@ -494,8 +559,21 @@ fun AuthScreen(
                 confirmButton = {
                     Button(
                         onClick = {
+                            if (forgotEmailInput.isBlank() || !forgotEmailInput.contains("@")) {
+                                errorMessage = "Please enter a valid email for reset."
+                                showForgotPasswordDialog = false
+                                return@Button
+                            }
                             showForgotPasswordDialog = false
-                            infoDialogMessage = "If an account exists for $forgotEmailInput, a password reset link has been dispatched."
+                            coroutineScope.launch {
+                                try {
+                                    Firebase.auth.sendPasswordResetEmail(forgotEmailInput.trim()).await()
+                                    infoDialogMessage = "A password reset email has been dispatched to $forgotEmailInput. Check your inbox!"
+                                } catch (e: Exception) {
+                                    Log.e("Auth", "Password reset failed", e)
+                                    infoDialogMessage = "Password reset notice: If an account exists for $forgotEmailInput, instructions will be delivered."
+                                }
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = BrandPrimary)
                     ) {

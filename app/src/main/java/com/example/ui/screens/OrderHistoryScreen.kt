@@ -19,7 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Replay
@@ -28,9 +28,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -216,7 +216,7 @@ fun OrderHistoryScreen(
                         Text("Payment Method: ${rec.paymentMethod}")
                         Text("Delivery to: ${rec.deliveryAddress}")
                         Spacer(modifier = Modifier.height(10.dp))
-                        Divider()
+                        HorizontalDivider()
                         Spacer(modifier = Modifier.height(8.dp))
                         rec.items.forEach { item ->
                             Row(
@@ -228,7 +228,7 @@ fun OrderHistoryScreen(
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Divider()
+                        HorizontalDivider()
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("Total Paid", fontWeight = FontWeight.Bold)
@@ -318,7 +318,7 @@ fun OrderHistoryCard(
                 maxLines = 2
             )
 
-            Divider(modifier = Modifier.padding(vertical = 12.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
             // Action Buttons
             Row(
@@ -342,7 +342,7 @@ fun OrderHistoryCard(
                     ) {
                         Text("Track Live")
                         Spacer(modifier = Modifier.width(4.dp))
-                        Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
                     }
                 } else {
                     OutlinedButton(

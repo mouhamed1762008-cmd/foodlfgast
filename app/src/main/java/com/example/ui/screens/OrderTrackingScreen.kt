@@ -39,7 +39,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -328,7 +328,7 @@ fun OrderTrackingScreen(
                         Text(text = order.deliveryAddress, style = MaterialTheme.typography.bodyMedium)
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
                     Text(
                         text = "Order Items (${order.items.size})",
@@ -363,7 +363,7 @@ fun OrderTrackingScreen(
                         }
                     }
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

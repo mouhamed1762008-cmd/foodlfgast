@@ -9,16 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LunchDining
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LunchDining
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -298,7 +298,7 @@ fun FastFoodBottomBar(
                     }
                 ) {
                     Icon(
-                        imageVector = if (currentTab == BottomTab.ORDERS) Icons.Filled.ReceiptLong else Icons.Outlined.ReceiptLong,
+                        imageVector = if (currentTab == BottomTab.ORDERS) Icons.AutoMirrored.Filled.ReceiptLong else Icons.AutoMirrored.Outlined.ReceiptLong,
                         contentDescription = "Orders"
                     )
                 }

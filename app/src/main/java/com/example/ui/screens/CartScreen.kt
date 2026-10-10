@@ -34,7 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -364,7 +364,7 @@ fun CartScreen(
 
                             BillRow(label = "Estimated Taxes (8%)", value = formatCents(state.taxCents))
 
-                            Divider(modifier = Modifier.padding(vertical = 10.dp))
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
