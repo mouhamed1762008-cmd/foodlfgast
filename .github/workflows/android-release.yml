@@ -30,8 +30,9 @@ jobs:
         run: |
           keytool -genkeypair -v \
             -keystore "$RUNNER_TEMP/release-key.jks" \
+            -storetype JKS \
             -storepass android-release-store \
-            -keypass android-release-key \
+            -keypass android-release-store \
             -alias upload \
             -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Android Release, OU=Build, O=foodlfgast, L=Unknown, ST=Unknown, C=DZ"
@@ -40,7 +41,7 @@ jobs:
         env:
           KEYSTORE_PATH: ${{ runner.temp }}/release-key.jks
           STORE_PASSWORD: android-release-store
-          KEY_PASSWORD: android-release-key
+          KEY_PASSWORD: android-release-store
         run: gradle --no-daemon assembleRelease
 
       - name: Locate and rename APK
