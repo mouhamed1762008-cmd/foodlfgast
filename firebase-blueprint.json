@@ -1,0 +1,155 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile document stored at /users/{userId}",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "fullName": { "type": "string", "description": "Customer's full name" },
+        "email": { "type": "string", "description": "Customer's email address" },
+        "phoneNumber": { "type": "string", "description": "Phone number" },
+        "profileImageUrl": { "type": "string", "description": "Profile picture URL" },
+        "preferredLanguage": { "type": "string", "description": "Language code (en, ar, fr)" },
+        "favorites": { "type": "array", "description": "List of favorite product IDs" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["uid", "email"]
+    },
+    "UserAddress": {
+      "title": "UserAddress",
+      "description": "Saved address document under /users/{userId}/addresses/{addressId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Address ID" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "label": { "type": "string", "description": "Address label (e.g. Home, Office)" },
+        "addressLine": { "type": "string", "description": "Street address and details" },
+        "city": { "type": "string", "description": "City" },
+        "postalCode": { "type": "string", "description": "Postal or zip code" },
+        "phoneNumber": { "type": "string", "description": "Contact phone for delivery" },
+        "isDefault": { "type": "boolean", "description": "Whether this is default address" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["id", "userId", "addressLine"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Food catalog category at /categories/{categoryId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Category identifier" },
+        "name": { "type": "string", "description": "Category display name" },
+        "iconName": { "type": "string", "description": "Icon identifier" },
+        "order": { "type": "integer", "description": "Display order" }
+      },
+      "required": ["id", "name"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Food menu item at /products/{productId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique product ID" },
+        "name": { "type": "string", "description": "Food item name" },
+        "description": { "type": "string", "description": "Food item description" },
+        "categoryId": { "type": "string", "description": "Category ID reference" },
+        "imageUrl": { "type": "string", "description": "Image asset or URL" },
+        "price": { "type": "integer", "description": "Price in minor units (cents)" },
+        "discountPrice": { "type": "integer", "description": "Discounted price in cents if on sale" },
+        "rating": { "type": "number", "description": "Customer average rating" },
+        "preparationTime": { "type": "integer", "description": "Estimated prep time in minutes" },
+        "isAvailable": { "type": "boolean", "description": "Whether in stock and orderable" },
+        "isVegetarian": { "type": "boolean", "description": "Vegetarian friendly" },
+        "isSpicy": { "type": "boolean", "description": "Spicy item flag" }
+      },
+      "required": ["id", "name", "categoryId", "price"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order document at /orders/{orderId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order ID" },
+        "userId": { "type": "string", "description": "Customer user ID" },
+        "customerName": { "type": "string", "description": "Name of customer" },
+        "customerPhone": { "type": "string", "description": "Phone number of customer" },
+        "deliveryAddress": { "type": "string", "description": "Delivery address string" },
+        "deliveryInstructions": { "type": "string", "description": "Special delivery instructions" },
+        "isDelivery": { "type": "boolean", "description": "True for delivery, false for pickup" },
+        "items": { "type": "array", "description": "Array of ordered items" },
+        "subtotal": { "type": "integer", "description": "Subtotal in cents" },
+        "discount": { "type": "integer", "description": "Discount in cents" },
+        "deliveryFee": { "type": "integer", "description": "Delivery fee in cents" },
+        "total": { "type": "integer", "description": "Total order amount in cents" },
+        "couponCode": { "type": "string", "description": "Applied promo code" },
+        "paymentMethod": { "type": "string", "description": "Payment method identifier" },
+        "paymentStatus": { "type": "string", "description": "Payment status" },
+        "orderStatus": { "type": "string", "description": "Current order lifecycle status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Order creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "userId", "items", "total", "orderStatus", "paymentMethod"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer review for food item at /reviews/{reviewId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Review ID" },
+        "userId": { "type": "string", "description": "Author user ID" },
+        "userName": { "type": "string", "description": "Author display name" },
+        "productId": { "type": "string", "description": "Food item ID" },
+        "rating": { "type": "integer", "description": "1 to 5 star rating" },
+        "comment": { "type": "string", "description": "Review comment" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["id", "userId", "productId", "rating"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Promotional coupon code at /coupons/{couponId}",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "description": "Promo coupon code" },
+        "discountPercent": { "type": "integer", "description": "Percent discount (0-100)" },
+        "discountAmount": { "type": "integer", "description": "Fixed discount in cents" },
+        "minOrderAmount": { "type": "integer", "description": "Minimum subtotal required in cents" },
+        "description": { "type": "string", "description": "Coupon description" },
+        "isActive": { "type": "boolean", "description": "Active flag" }
+      },
+      "required": ["code", "isActive"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User account profile"
+    },
+    "/users/{userId}/addresses/{addressId}": {
+      "schema": { "$ref": "#/entities/UserAddress" },
+      "description": "User saved delivery addresses"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Food categories catalog"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Fast food menu products catalog"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer food orders"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Food reviews and ratings"
+    },
+    "/coupons/{couponId}": {
+      "schema": { "$ref": "#/entities/Coupon" },
+      "description": "Promotional discounts and coupons"
+    }
+  }
+}

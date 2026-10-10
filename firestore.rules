@@ -1,0 +1,123 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidUserProfile(data) {
+      return data.uid is string &&
+             data.uid == request.auth.uid &&
+             data.email is string &&
+             (!('fullName' in data) || data.fullName is string) &&
+             (!('phoneNumber' in data) || data.phoneNumber is string) &&
+             (!('profileImageUrl' in data) || data.profileImageUrl is string) &&
+             (!('preferredLanguage' in data) || data.preferredLanguage is string) &&
+             (!('favorites' in data) || data.favorites is list) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time)) &&
+             (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    function isValidUserAddress(data, userId) {
+      return data.id is string &&
+             data.userId is string &&
+             data.userId == userId &&
+             data.addressLine is string &&
+             (!('label' in data) || data.label is string) &&
+             (!('city' in data) || data.city is string) &&
+             (!('postalCode' in data) || data.postalCode is string) &&
+             (!('phoneNumber' in data) || data.phoneNumber is string) &&
+             (!('isDefault' in data) || data.isDefault is bool) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time));
+    }
+
+    function isValidOrder(data) {
+      return data.id is string &&
+             data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.items is list &&
+             data.items.size() > 0 &&
+             data.total is int &&
+             data.total >= 0 &&
+             data.orderStatus is string &&
+             data.paymentMethod is string &&
+             (!('customerName' in data) || data.customerName is string) &&
+             (!('customerPhone' in data) || data.customerPhone is string) &&
+             (!('deliveryAddress' in data) || data.deliveryAddress is string) &&
+             (!('deliveryInstructions' in data) || data.deliveryInstructions is string) &&
+             (!('isDelivery' in data) || data.isDelivery is bool) &&
+             (!('subtotal' in data) || (data.subtotal is int && data.subtotal >= 0)) &&
+             (!('discount' in data) || (data.discount is int && data.discount >= 0)) &&
+             (!('deliveryFee' in data) || (data.deliveryFee is int && data.deliveryFee >= 0)) &&
+             (!('couponCode' in data) || data.couponCode is string) &&
+             (!('paymentStatus' in data) || data.paymentStatus is string) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time)) &&
+             (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    function isValidReview(data) {
+      return data.id is string &&
+             data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.productId is string &&
+             data.rating is int &&
+             data.rating >= 1 && data.rating <= 5 &&
+             (!('userName' in data) || data.userName is string) &&
+             (!('comment' in data) || data.comment is string) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time));
+    }
+
+    // User profile
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow delete: if isOwner(userId);
+
+      // User subcollections (Addresses)
+      match /addresses/{addressId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidUserAddress(request.resource.data, userId);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Categories (Publicly readable)
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Products (Publicly readable)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Orders (Customer private)
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidOrder(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && isValidOrder(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Reviews (Publicly readable, author writable)
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidReview(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && isValidReview(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Coupons (Readable by authenticated users)
+    match /coupons/{couponId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+  }
+}
