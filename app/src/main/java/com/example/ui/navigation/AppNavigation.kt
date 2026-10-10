@@ -2,12 +2,34 @@ package com.example.ui.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
@@ -19,24 +41,29 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LunchDining
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ui.screens.AdminPanelScreen
 import com.example.ui.screens.CartScreen
 import com.example.ui.screens.CategoriesScreen
@@ -47,7 +74,10 @@ import com.example.ui.screens.OrderHistoryScreen
 import com.example.ui.screens.OrderTrackingScreen
 import com.example.ui.screens.ProductDetailScreen
 import com.example.ui.screens.ProfileScreen
+import com.example.ui.theme.BrandAccent
 import com.example.ui.theme.BrandPrimary
+import com.example.ui.theme.BrandPrimaryDark
+import com.example.ui.theme.BrandPrimaryLight
 import com.example.viewmodel.BottomTab
 import com.example.viewmodel.FastFoodUiState
 import com.example.viewmodel.FastFoodViewModel
@@ -220,114 +250,206 @@ fun FastFoodBottomBar(
     onSelectTab: (BottomTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    NavigationBar(
-        modifier = modifier.testTag("bottom_nav_bar"),
-        tonalElevation = 8.dp
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .testTag("bottom_nav_bar")
     ) {
-        NavigationBarItem(
-            selected = currentTab == BottomTab.HOME,
-            onClick = { onSelectTab(BottomTab.HOME) },
-            icon = {
-                Icon(
-                    imageVector = if (currentTab == BottomTab.HOME) Icons.Filled.Home else Icons.Outlined.Home,
-                    contentDescription = "Home"
-                )
-            },
-            label = { Text("Home", fontWeight = if (currentTab == BottomTab.HOME) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = BrandPrimary,
-                selectedTextColor = BrandPrimary,
-                indicatorColor = BrandPrimary.copy(alpha = 0.12f)
-            ),
-            modifier = Modifier.testTag("nav_tab_home")
-        )
-
-        NavigationBarItem(
-            selected = currentTab == BottomTab.CATEGORIES,
-            onClick = { onSelectTab(BottomTab.CATEGORIES) },
-            icon = {
-                Icon(
-                    imageVector = if (currentTab == BottomTab.CATEGORIES) Icons.Filled.LunchDining else Icons.Outlined.LunchDining,
-                    contentDescription = "Menu"
-                )
-            },
-            label = { Text("Menu", fontWeight = if (currentTab == BottomTab.CATEGORIES) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = BrandPrimary,
-                selectedTextColor = BrandPrimary,
-                indicatorColor = BrandPrimary.copy(alpha = 0.12f)
-            ),
-            modifier = Modifier.testTag("nav_tab_categories")
-        )
-
-        NavigationBarItem(
-            selected = currentTab == BottomTab.FAVORITES,
-            onClick = { onSelectTab(BottomTab.FAVORITES) },
-            icon = {
-                BadgedBox(
-                    badge = {
-                        if (favoriteCount > 0) {
-                            Badge(containerColor = BrandPrimary) { Text("$favoriteCount") }
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (currentTab == BottomTab.FAVORITES) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favorites"
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(26.dp),
+                    spotColor = BrandPrimary.copy(alpha = 0.25f),
+                    ambientColor = Color.Black
+                ),
+            shape = RoundedCornerShape(26.dp),
+            color = Color(0xFF141622).copy(alpha = 0.98f),
+            border = BorderStroke(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF2E3245),
+                        Color(0xFF1A1C29)
                     )
-                }
-            },
-            label = { Text("Favorites", fontWeight = if (currentTab == BottomTab.FAVORITES) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = BrandPrimary,
-                selectedTextColor = BrandPrimary,
-                indicatorColor = BrandPrimary.copy(alpha = 0.12f)
-            ),
-            modifier = Modifier.testTag("nav_tab_favorites")
-        )
-
-        NavigationBarItem(
-            selected = currentTab == BottomTab.ORDERS,
-            onClick = { onSelectTab(BottomTab.ORDERS) },
-            icon = {
-                BadgedBox(
-                    badge = {
-                        if (activeOrdersCount > 0) {
-                            Badge(containerColor = BrandPrimary) { Text("$activeOrdersCount") }
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (currentTab == BottomTab.ORDERS) Icons.AutoMirrored.Filled.ReceiptLong else Icons.AutoMirrored.Outlined.ReceiptLong,
-                        contentDescription = "Orders"
-                    )
-                }
-            },
-            label = { Text("Orders", fontWeight = if (currentTab == BottomTab.ORDERS) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = BrandPrimary,
-                selectedTextColor = BrandPrimary,
-                indicatorColor = BrandPrimary.copy(alpha = 0.12f)
-            ),
-            modifier = Modifier.testTag("nav_tab_orders")
-        )
-
-        NavigationBarItem(
-            selected = currentTab == BottomTab.PROFILE,
-            onClick = { onSelectTab(BottomTab.PROFILE) },
-            icon = {
-                Icon(
-                    imageVector = if (currentTab == BottomTab.PROFILE) Icons.Filled.Person else Icons.Outlined.Person,
-                    contentDescription = "Profile"
                 )
-            },
-            label = { Text("Profile", fontWeight = if (currentTab == BottomTab.PROFILE) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = BrandPrimary,
-                selectedTextColor = BrandPrimary,
-                indicatorColor = BrandPrimary.copy(alpha = 0.12f)
-            ),
-            modifier = Modifier.testTag("nav_tab_profile")
-        )
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(66.dp)
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ModernNavItem(
+                    selected = currentTab == BottomTab.HOME,
+                    label = "Home",
+                    iconFilled = Icons.Filled.Home,
+                    iconOutlined = Icons.Outlined.Home,
+                    testTag = "nav_tab_home",
+                    onClick = { onSelectTab(BottomTab.HOME) }
+                )
+
+                ModernNavItem(
+                    selected = currentTab == BottomTab.CATEGORIES,
+                    label = "Menu",
+                    iconFilled = Icons.Filled.LunchDining,
+                    iconOutlined = Icons.Outlined.LunchDining,
+                    testTag = "nav_tab_categories",
+                    onClick = { onSelectTab(BottomTab.CATEGORIES) }
+                )
+
+                ModernNavItem(
+                    selected = currentTab == BottomTab.FAVORITES,
+                    label = "Favorites",
+                    iconFilled = Icons.Filled.Favorite,
+                    iconOutlined = Icons.Outlined.FavoriteBorder,
+                    badgeCount = favoriteCount,
+                    badgeColor = BrandPrimary,
+                    badgeTextColor = Color.White,
+                    testTag = "nav_tab_favorites",
+                    onClick = { onSelectTab(BottomTab.FAVORITES) }
+                )
+
+                ModernNavItem(
+                    selected = currentTab == BottomTab.ORDERS,
+                    label = "Orders",
+                    iconFilled = Icons.AutoMirrored.Filled.ReceiptLong,
+                    iconOutlined = Icons.AutoMirrored.Outlined.ReceiptLong,
+                    badgeCount = activeOrdersCount,
+                    badgeColor = BrandAccent,
+                    badgeTextColor = Color(0xFF14151C),
+                    testTag = "nav_tab_orders",
+                    onClick = { onSelectTab(BottomTab.ORDERS) }
+                )
+
+                ModernNavItem(
+                    selected = currentTab == BottomTab.PROFILE,
+                    label = "Profile",
+                    iconFilled = Icons.Filled.Person,
+                    iconOutlined = Icons.Outlined.Person,
+                    testTag = "nav_tab_profile",
+                    onClick = { onSelectTab(BottomTab.PROFILE) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.ModernNavItem(
+    selected: Boolean,
+    label: String,
+    iconFilled: ImageVector,
+    iconOutlined: ImageVector,
+    testTag: String,
+    badgeCount: Int = 0,
+    badgeColor: Color = BrandPrimary,
+    badgeTextColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    val iconScale by animateFloatAsState(
+        targetValue = if (selected) 1.15f else 1.0f,
+        animationSpec = spring(dampingRatio = 0.6f, stiffness = 450f),
+        label = "tab_icon_scale"
+    )
+    val animatedIconColor by animateColorAsState(
+        targetValue = if (selected) BrandPrimary else Color(0xFF8A90A2),
+        label = "tab_icon_color"
+    )
+    val animatedLabelColor by animateColorAsState(
+        targetValue = if (selected) BrandPrimary else Color(0xFF8A90A2),
+        label = "tab_label_color"
+    )
+    val animatedBgColor by animateColorAsState(
+        targetValue = if (selected) BrandPrimary.copy(alpha = 0.14f) else Color.Transparent,
+        label = "tab_bg_color"
+    )
+
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(20.dp))
+            .background(animatedBgColor)
+            .then(
+                if (selected) {
+                    Modifier.border(
+                        1.dp,
+                        BrandPrimary.copy(alpha = 0.28f),
+                        RoundedCornerShape(20.dp)
+                    )
+                } else Modifier
+            )
+            .clickable(onClick = onClick)
+            .testTag(testTag),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.scale(iconScale)
+            ) {
+                Icon(
+                    imageVector = if (selected) iconFilled else iconOutlined,
+                    contentDescription = label,
+                    tint = animatedIconColor,
+                    modifier = Modifier.size(23.dp)
+                )
+
+                if (badgeCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 10.dp, y = (-4).dp)
+                            .background(badgeColor, RoundedCornerShape(10.dp))
+                            .padding(horizontal = 4.dp, vertical = 1.dp)
+                    ) {
+                        Text(
+                            text = if (badgeCount > 99) "99+" else "$badgeCount",
+                            color = badgeTextColor,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = label,
+                fontSize = 10.sp,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                color = animatedLabelColor,
+                maxLines = 1
+            )
+
+            AnimatedVisibility(
+                visible = selected,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .size(width = 12.dp, height = 2.5.dp)
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                listOf(BrandPrimaryLight, BrandPrimary)
+                            ),
+                            shape = RoundedCornerShape(2.dp)
+                        )
+                )
+            }
+        }
     }
 }

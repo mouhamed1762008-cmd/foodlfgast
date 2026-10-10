@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -229,7 +230,7 @@ fun ProfileScreen(
             onClick = { onNavigate(ScreenDestination.Checkout) }
         )
 
-        // Dark Mode Switch
+        // Appearance: Midnight Dark (Exclusively Dark Theme)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -240,23 +241,46 @@ fun ProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.DarkMode, contentDescription = null, tint = BrandPrimary, modifier = Modifier.size(24.dp))
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.DarkMode,
+                        contentDescription = null,
+                        tint = BrandPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(modifier = Modifier.width(14.dp))
                     Column {
-                        Text("Dark Mode", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
-                        Text("Toggle app dark theme appearance", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = "Theme Appearance",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = "Midnight Dark • Light mode removed",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
-                Switch(
-                    checked = state.isDarkMode,
-                    onCheckedChange = { onToggleDarkMode() },
-                    colors = SwitchDefaults.colors(checkedThumbColor = BrandPrimary, checkedTrackColor = BrandPrimary.copy(alpha = 0.4f))
-                )
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = BrandPrimary.copy(alpha = 0.15f),
+                    border = BorderStroke(1.dp, BrandPrimary.copy(alpha = 0.35f))
+                ) {
+                    Text(
+                        text = "ALWAYS ON",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
+                        color = BrandPrimary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                    )
+                }
             }
         }
 

@@ -60,7 +60,7 @@ fun QuickBiteAppRoot() {
     }
 
     if (currentUser == null && !isGuestMode) {
-        QuickBiteTheme(darkTheme = false) {
+        QuickBiteTheme {
             Surface(modifier = Modifier.fillMaxSize()) {
                 AuthScreen(
                     onAuthSuccess = {
@@ -77,7 +77,7 @@ fun QuickBiteAppRoot() {
         val viewModel: FastFoodViewModel = viewModel()
         val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-        QuickBiteTheme(darkTheme = state.isDarkMode) {
+        QuickBiteTheme {
             Surface(modifier = Modifier.fillMaxSize()) {
                 MainAppNavigation(
                     viewModel = viewModel,

@@ -2,5 +2,7 @@
   "name": "QuickBite",
   "description": "Modern fast food ordering application with meal customization, real-time order tracking, and seamless checkout. Requires Android 7.0 and up.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

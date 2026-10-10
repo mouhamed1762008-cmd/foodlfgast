@@ -72,8 +72,8 @@ data class FastFoodUiState(
     val orders: List<Order> = emptyList(),
     val activeTrackingOrder: Order? = null,
 
-    // Preferences & UI
-    val isDarkMode: Boolean = false,
+    // Preferences & UI (Light mode removed - exclusively modern dark theme)
+    val isDarkMode: Boolean = true,
     val selectedLanguage: String = "en", // en, ar, fr
     val orderNotificationEnabled: Boolean = true,
     val promoNotificationEnabled: Boolean = true,
